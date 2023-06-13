@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useLocalStorage } from "react-use";
 import PodcastCard from "../../components/PodcastCard/PodcastCard";
@@ -7,6 +8,8 @@ import Filter from "../../components/filter/Filter";
 import "./Home.scss";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   const [data, setData] = useLocalStorage("podcastData", null);
   const [filter, setFilter] = useState("");
 
@@ -34,7 +37,13 @@ const Home = () => {
       <Filter setFilter={setFilter} count={filteredData?.length} />
       <div className="podcast-grid">
         {filteredData?.map((podcast) => (
-          <PodcastCard key={podcast.id.attributes["im:id"]} podcast={podcast} />
+          <PodcastCard
+            onClick={() =>
+              navigate(`/podcast/${podcast.id.attributes["im:id"]}`)
+            }
+            key={podcast.id.attributes["im:id"]}
+            podcast={podcast}
+          />
         ))}
       </div>
     </div>

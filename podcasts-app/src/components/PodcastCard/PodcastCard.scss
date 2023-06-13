@@ -1,0 +1,26 @@
+.card {
+  position: relative;
+  flex-basis: 20%;
+  margin: 0 2.5% 100px;
+  padding: 0 20px 5px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  text-align: center;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgb(102, 102, 102);
+  img {
+    margin: -70px auto 5px;
+    border-radius: 50%;
+    width: 50%;
+  }
+  h2 {
+    font-size: 13px;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  p.author {
+    font-size: 13px;
+  }
+}

@@ -1,4 +1,33 @@
 header {
-  padding-left: 10px;
+  position: relative;
   border-bottom: 2px solid #e8e8e8;
+  margin-bottom: 30px;
+  h3 {
+    color: var(--primary);
+    width: fit-content;
+    padding: 5px 10px;
+  }
+  .loading-dot {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    box-shadow: 0 0 5px 5px var(--primary);
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }

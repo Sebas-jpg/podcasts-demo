@@ -1,22 +1,38 @@
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { parse } from "fast-xml-parser";
+import dayjs from "dayjs";
 import "./PodcastDetails.scss";
-import { formatDate } from "../../helpers/helpers";
+import PodcastEpisodesPanel from "../../components/podcast-episodes-panel/PodcastEpisodesPanel";
+import PodcastDetailsLeftPanel from "../../components/podcast-details-left-panel/PodcastDetailsLeftPanel";
+import { LoadingContext } from "../../contexts/NavigationContext";
 
 const PodcastDetails = () => {
   const { id } = useParams();
+
+  const { loading, setLoading } = useContext(LoadingContext);
+
   const [podcastData, setPodcastData] = useLocalStorage(`podcast-${id}`, null);
-  const [episodes, setEpisodes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [episodes, setEpisodes] = useLocalStorage(`episodes-${id}`, []);
+
+  const [lastFetchedPodcastTime, setLastFetchedPodcastTime] = useLocalStorage(
+    `lastFetchedPodcastTime-${id}`,
+    null
+  );
+  const [lastFetchedEpisodesTime, setLastFetchedEpisodesTime] = useLocalStorage(
+    `lastFetchedEpisodesTime-${id}`,
+    null
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        if (!podcastData) {
+    const fetchPodcastData = async () => {
+      if (
+        !podcastData ||
+        dayjs().diff(dayjs(lastFetchedPodcastTime), "day") > 0
+      ) {
+        try {
           const response = await axios.get(
             `https://api.allorigins.win/raw?url=${encodeURIComponent(
               `https://itunes.apple.com/lookup?id=${id}`
@@ -25,72 +41,70 @@ const PodcastDetails = () => {
 
           const data = response.data.results[0];
           setPodcastData(data);
-
-          const feedResponse = await axios.get(
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(
-              data.feedUrl
-            )}`
-          );
-          console.log("feedResponse", feedResponse);
-          const feedData = parse(feedResponse.data);
-          console.log("feedData", feedData);
-          const rssEpisodes = feedData.rss.channel.item || [];
-          setEpisodes(rssEpisodes);
+          setLastFetchedPodcastTime(dayjs().toISOString());
+        } catch (error) {
+          console.error("Failed to fetch podcast details:", error);
         }
-      } catch (error) {
-        console.error("Failed to fetch podcast details:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    fetchData();
-  }, [id, podcastData, setPodcastData]);
+    fetchPodcastData();
+  }, [
+    id,
+    podcastData,
+    lastFetchedPodcastTime,
+    setLastFetchedPodcastTime,
+    setPodcastData,
+  ]);
 
-  return isLoading ? (
-    <p>Loading...</p>
-  ) : podcastData ? (
-    <div className="podcast-details-container">
-      <div className="left-panel box-shadow-standard">
-        <img src={podcastData.artworkUrl600} alt={podcastData.trackName} />
-        <div className="track-details">
-          <b>{podcastData.trackName}</b>
-          <p>by {podcastData.artistName}</p>
-        </div>
-        {/* TODO: lookup where the actual description is */}
-        <p className="description">
-          <span>Description:</span>
-          {podcastData.collectionName}
-        </p>
-      </div>
-      <div className="right-panel">
-        <div className="box-shadow-standard episodes-count">
-          <p>Episodes: {episodes.length}</p>
-        </div>
-        <div className="box-shadow-standard episodes-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              {episodes?.map((episode, index) => (
-                <tr key={index}>
-                  <td>{episode.title}</td>
-                  <td>{formatDate(episode.pubDate)}</td>
-                  <td>{episode["itunes:duration"]}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+  useEffect(() => {
+    const fetchEpisodesData = async () => {
+      if (
+        (podcastData && !episodes?.length) ||
+        dayjs().diff(dayjs(lastFetchedEpisodesTime), "day") > 0
+      ) {
+        try {
+          const feedResponse = await axios.get(
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(
+              podcastData.feedUrl
+            )}`
+          );
+
+          const feedData = parse(feedResponse.data);
+          const rssEpisodes = feedData.rss.channel.item || [];
+          setEpisodes(rssEpisodes);
+          setLastFetchedEpisodesTime(dayjs().toISOString());
+        } catch (error) {
+          console.error("Failed to fetch episodes:", error);
+        }
+      }
+    };
+
+    fetchEpisodesData();
+  }, [
+    podcastData,
+    episodes,
+    lastFetchedEpisodesTime,
+    setLastFetchedPodcastTime,
+    setLoading,
+    setPodcastData,
+    setEpisodes,
+    setLastFetchedEpisodesTime,
+  ]);
+
+  useEffect(() => {
+    if (podcastData && episodes?.length) {
+      setLoading(false);
+    }
+  }, [podcastData, episodes, setLoading, setLastFetchedEpisodesTime]);
+
+  if (loading || !episodes?.length) return null;
+
+  return (
+    <div className="podcast-details-container wc">
+      <PodcastDetailsLeftPanel podcastId={id} podcastData={podcastData} />
+      <PodcastEpisodesPanel episodes={episodes} podcastId={id} />
     </div>
-  ) : (
-    <p>Podcast not found.</p>
   );
 };
 

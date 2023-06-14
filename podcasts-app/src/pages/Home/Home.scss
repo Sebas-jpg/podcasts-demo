@@ -1,10 +1,6 @@
-.home-container {
-  max-width: 1200px;
-  margin: 0 auto 0;
-  .podcast-grid {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-top: 80px;
-  }
+.podcast-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 80px;
 }

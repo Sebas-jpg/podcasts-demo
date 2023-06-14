@@ -119,6 +119,7 @@ const EpisodeDetails = () => {
       <div className="right-panel box-shadow-standard episode-details-right">
         <h2>{episodeData?.title}</h2>
         <p dangerouslySetInnerHTML={{ __html: episodeData?.description }} />
+        {/* an actual url can't be found in the episodeData */}
         <audio controls>
           <source src={episodeData?.enclosure.url} type="audio/mpeg" />
           Your browser does not support the audio element.

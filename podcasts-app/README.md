@@ -4,7 +4,7 @@ Before running the app, **make sure that port 3001 is free on your machine**.
 
 ### Installation
 
-To run the app, first, you need to install the required dependencies. Navigate to the app directory in your terminal and run:
+To run the app, first, you need to install the required dependencies. Navigate to the app directory in your terminal (`/podcasts-demo/podcasts-app`) and run:
 
 ### `yarn install`
 

@@ -44,6 +44,7 @@ const PodcastDetails = () => {
           setLastFetchedPodcastTime(dayjs().toISOString());
         } catch (error) {
           console.error("Failed to fetch podcast details:", error);
+          setLoading(false);
         }
       }
     };
@@ -76,6 +77,7 @@ const PodcastDetails = () => {
           setLastFetchedEpisodesTime(dayjs().toISOString());
         } catch (error) {
           console.error("Failed to fetch episodes:", error);
+          setLoading(false);
         }
       }
     };

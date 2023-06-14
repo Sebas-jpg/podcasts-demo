@@ -1,3 +1,9 @@
+## Getting Started
+
+Before running the app, **make sure that port 3001 is free on your machine**.
+
+### Installation
+
 To run the app, first, you need to install the required dependencies. Navigate to the app directory in your terminal and run:
 
 ### `yarn install`
@@ -6,15 +12,27 @@ This will install all the necessary dependencies listed in your `package.json` f
 
 Once the installation is complete, you can start the app in the development mode by running:
 
-### `yarn start`
+### `yarn start` or `PORT=3001 react-scripts start` on Linux
 
-This starts the development server, and you can open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will automatically reload if you make any changes to your source files.
+This starts the development server, and you can open [http://localhost:3001](http://localhost:3001) to view it in your browser. The page will automatically reload if you make any changes to your source files.
 
-If you want to run the app in the production mode, please use the following command:
+To build the app for production, please follow these steps:
+
+1. Run the following command to create an optimized production build:
 
 ### `yarn build`
 
-This will create an optimized, minified version of your application that's ready for deployment.
+2. Once the build process is complete, a `build` folder will be generated in the project directory.
+
+3. To serve the production build with a static server, you can use the `serve` package. If you don't have it installed globally, run the following command to install it:
+
+### `yarn global add serve`
+
+4. Finally, use the following command to serve the production build:
+
+### `yarn serve`
+
+The app will be served at port [http://localhost:3001](http://localhost:3001).
 
 ### Any issues?
 
